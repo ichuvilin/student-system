@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 import TextField from '@mui/material/TextField';
-import {Button, Container, Paper} from "@mui/material";
+import {Button, Container, LinearProgress, Paper} from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
 import PopAlert from "./PopAlert";
 
@@ -10,6 +10,7 @@ const Students = () => {
     const paperStyle = {padding: "50px 20px", width: 600, margin: "20px auto"}
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
+    const [students, setStudents] = useState([])
     const [showPopUp, setShowPopUp] = useState(false);
     const showPopupHandler = () => setShowPopUp(true);
 
@@ -29,6 +30,10 @@ const Students = () => {
     }
 
     useEffect(() => {
+        fetch("http://localhost:8080/student/getAll")
+            .then(res => res.json())
+            .then(result => setStudents(result))
+
         const timer = setTimeout(() => {
             setShowPopUp(false);
         }, 5000);
@@ -59,6 +64,20 @@ const Students = () => {
                     </Button>
                     {popup}
                 </form>
+            </Paper>
+            <h1>Students List</h1>
+
+            <Paper elevation={3} style={paperStyle}>
+                {students.length === 0 ?
+                    <LinearProgress/>
+                    :
+                    students.map(student => (
+                        <Paper elevation={6} style={{margin: 10, padding: 15, textAlign: "left"}} key={student.id}>
+                            Name: {student.name} <br/>
+                            Address: {student.address}
+                        </Paper>
+                    ))
+                }
             </Paper>
         </Container>
     );
